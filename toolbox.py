@@ -490,6 +490,57 @@ def clear_line_break(txt):
     return txt
 
 
+def write_records_to_file(history, file_name=None):
+    """
+    将对话记录history以Markdown格式写入文件中。如果没有指定文件名，则使用当前时间生成文件名。
+    """
+    import os
+    import time
+    if file_name is None:
+        # file_name = time.strftime("chatGPT分析报告%Y-%m-%d-%H-%M-%S", time.localtime()) + '.md'
+        file_name = 'chatGPT历史记录_' + \
+            time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + '.md'
+    os.makedirs('./gpt_log/chat_records', exist_ok=True)
+    with open(f'./gpt_log/chat_records/{file_name}', 'w', encoding='utf8') as f:
+        f.write(f'# GPT对话记录 - {time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())} \n')
+        for i, content in enumerate(history):
+            try:    # 这个bug没找到触发条件，暂时先这样顶一下
+                if type(content) != str:
+                    content = str(content)
+            except:
+                continue
+            if i % 2 == 0:
+                f.write('## ')
+            f.write(content)
+            f.write('\n\n')
+    res = '聊天记录已经被写入:' + os.path.abspath(f'./gpt_log/chat_records/{file_name}')
+    print(res)
+    return res
+
+
+# 保存对话记录
+def save_history(history, file_name=None):
+    """
+        将对话记录history以Markdown格式写入文件中。如果没有指定文件名，则使用当前时间生成文件名。
+    """
+    import os, time
+    if file_name is None:
+        # file_name = time.strftime("chatGPT分析报告%Y-%m-%d-%H-%M-%S", time.localtime()) + '.md'
+        file_name = 'history_' + time.strftime("%Y-%m-%d-%H-%M", time.localtime()) + '.md'
+    os.makedirs('./gpt_chathistory/', exist_ok=True)
+    with open(f'./gpt_chathistory/{file_name}', 'w', encoding = 'utf8') as f:
+        f.write('# chatGPT聊天记录 \n')
+        for i, content in enumerate(history):
+            if i%2==0: f.write('## ')
+            f.write(content)
+            f.write('\n\n')
+    res = '以上聊天记录已被写入以下地址: \n' + os.path.abspath(f'gpt_chathistory/{file_name}')
+    
+    print(res)
+    return res
+
+
+
 class DummyWith():
     """
     这段代码定义了一个名为DummyWith的空上下文管理器，

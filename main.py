@@ -3,7 +3,7 @@ import os; os.environ['no_proxy'] = '*' # 避免代理网络产生意外污染
 def main():
     import gradio as gr
     from request_llm.bridge_all import predict
-    from toolbox import format_io, find_free_port, on_file_uploaded, on_report_generated, get_conf, ArgsGeneralWrapper, DummyWith
+    from toolbox import format_io, find_free_port, on_file_uploaded, on_report_generated, get_conf, ArgsGeneralWrapper, write_records_to_file, DummyWith
     # 建议您复制一个config_private.py放自己的秘密, 如API和代理网址, 避免不小心传github被别人看到
     proxies, WEB_PORT, LLM_MODEL, CONCURRENT_COUNT, AUTHENTICATION, CHATBOT_HEIGHT, LAYOUT, API_KEY, AVAIL_LLM_MODELS = \
         get_conf('proxies', 'WEB_PORT', 'LLM_MODEL', 'CONCURRENT_COUNT', 'AUTHENTICATION', 'CHATBOT_HEIGHT', 'LAYOUT', 'API_KEY', 'AVAIL_LLM_MODELS')
@@ -66,6 +66,7 @@ def main():
                     with gr.Row():
                         submitBtn = gr.Button("提交", variant="primary")
                     with gr.Row():
+                        historyBtn = gr.Button("保存记录", variant="secondary"); historyBtn.style(size="sm")
                         resetBtn = gr.Button("重置", variant="secondary"); resetBtn.style(size="sm")
                         stopBtn = gr.Button("停止", variant="secondary"); stopBtn.style(size="sm")
                         clearBtn = gr.Button("清除", variant="secondary", visible=False); clearBtn.style(size="sm")
@@ -138,6 +139,10 @@ def main():
         resetBtn2.click(lambda: ([], [], "已重置"), None, [chatbot, history, status])
         clearBtn.click(lambda: ("",""), None, [txt, txt2])
         clearBtn2.click(lambda: ("",""), None, [txt, txt2])
+
+        # 保存历史记录按钮
+        historyBtn.click(write_records_to_file, [history], status)
+
         # 基础功能区的回调函数注册
         for k in functional:
             click_handle = functional[k]["Button"].click(fn=ArgsGeneralWrapper(predict), inputs=[*input_combo, gr.State(True), gr.State(k)], outputs=output_combo)
