@@ -19,7 +19,6 @@ lib64/
 parts/
 sdist/
 var/
-docs/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
@@ -146,3 +145,4 @@ cradle*
 debug*
 private*
 crazy_functions/test_project/pdf_and_word
+crazy_functions/test_samples
